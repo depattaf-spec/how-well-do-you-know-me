@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Well Do You Know Me? 💕</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      background: #000000;
+      color: #ffffff;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 40px 30px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .header h1 {
+      font-size: 3em;
+      background: linear-gradient(135deg, #ff006e, #ff66b3, #00ffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .header p {
+      font-size: 1.2em;
+      color: #ff66b3;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .quiz-intro {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 30px;
+      background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(0, 255, 255, 0.1));
+      border: 2px solid #ff006e;
+      border-radius: 20px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .quiz-intro h2 {
+      font-size: 1.8em;
+      color: #00ffff;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .quiz-intro p {
+      font-size: 1.1em;
+      color: #ff66b3;
+      line-height: 1.6;
+    }
+
+    .question-container {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid #ff006e;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      animation: slideIn 0.5s ease-out;
+      position: relative;
+    }
+
+    .question-number {
+      color: #00ffff;
+      font-size: 0.9em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.4em;
+      color: #ffffff;
+      margin-bottom: 25px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid #ff66b3;
+      color: #ffffff;
+      padding: 18px 24px;
+      font-size: 1.1em;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-btn:hover {
+      background: rgba(255, 102, 179, 0.2);
+      border-color: #ff006e;
+      transform: translateX(5px);
+    }
+
+    .option-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .option-btn.correct {
+      background: rgba(0, 255, 0, 0.2);
+      border-color: #00ff00;
+      animation: correctPulse 0.6s ease;
+    }
+
+    .option-btn.wrong {
+      background: rgba(255, 0, 0, 0.2);
+      border-color: #ff0000;
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    @keyframes correctPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .lightning {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 15em;
+      pointer-events: none;
+      z-index: 1000;
+      animation: lightningStrike 0.6s ease-out;
+      display: none;
+    }
+
+    .lightning.show {
+      display: block;
+    }
+
+    @keyframes lightningStrike {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-100px) scale(0.5); }
+      50% { opacity: 1; transform: translateX(-50%) translateY(200px) scale(1.2); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(400px) scale(1); }
+    }
+
+    .results {
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, rgba(255, 0, 110, 0.15), rgba(0, 255, 255, 0.15));
+      border: 3px solid #ff006e;
+      border-radius: 20px;
+      animation: fadeIn 0.8s ease-out;
+      display: none;
+    }
+
+    .results.show {
+      display: block;
+    }
+
+    .results h2 {
+      font-size: 2.5em;
+      background: linear-gradient(135deg, #ff006e, #00ffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 30px;
+      font-weight: 900;
+    }
+
+    .score-bar-container {
+      width: 100%;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #ff66b3;
+      border-radius: 25px;
+      overflow: hidden;
+      margin: 30px 0;
+      position: relative;
+    }
+
+    .score-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #ff006e, #ff66b3, #00ffff);
+      border-radius: 25px;
+      transition: width 1.5s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.2em;
+      color: #000;
+    }
+
+    .score-text {
+      font-size: 1.5em;
+      color: #00ffff;
+      margin-top: 20px;
+      font-weight: 700;
+    }
+
+    .message {
+      font-size: 1.3em;
+      color: #ff66b3;
+      margin-top: 25px;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .next-btn {
+      background: linear-gradient(135deg, #ff006e, #ff66b3);
+      border: none;
+      color: #000;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .next-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(255, 0, 110, 0.6);
+    }
+
+    .progress {
+      text-align: center;
+      color: #00ffff;
+      font-size: 1em;
+      margin-bottom: 20px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 20px 15px;
+      }
+
+      .header {
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        font-size: 2em;
+        line-height: 1.2;
+      }
+
+      .header p {
+        font-size: 1em;
+      }
+
+      .quiz-intro {
+        padding: 20px 15px;
+        margin-bottom: 25px;
+      }
+
+      .quiz-intro h2 {
+        font-size: 1.3em;
+      }
+
+      .quiz-intro p {
+        font-size: 0.95em;
+      }
+
+      .question-container {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+      }
+
+      .question-number {
+        font-size: 0.8em;
+      }
+
+      .question-text {
+        font-size: 1.1em;
+        margin-bottom: 20px;
+      }
+
+      .options {
+        gap: 12px;
+      }
+
+      .option-btn {
+        font-size: 0.95em;
+        padding: 14px 16px;
+      }
+
+      .next-btn {
+        padding: 12px 30px;
+        font-size: 1em;
+        margin-top: 20px;
+      }
+
+      .progress {
+        font-size: 0.9em;
+        margin-bottom: 15px;
+      }
+
+      .results {
+        padding: 25px 20px;
+      }
+
+      .results h2 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+      }
+
+      .score-bar-container {
+        height: 40px;
+        margin: 20px 0;
+      }
+
+      .score-bar {
+        font-size: 1em;
+      }
+
+      .score-text {
+        font-size: 1.2em;
+        margin-top: 15px;
+      }
+
+      .message {
+        font-size: 1.05em;
+        margin-top: 20px;
+      }
+
+      .lightning {
+        font-size: 8em;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .header h1 {
+        font-size: 1.7em;
+      }
+
+      .quiz-intro h2 {
+        font-size: 1.15em;
+      }
+
+      .question-text {
+        font-size: 1em;
+      }
+
+      .option-btn {
+        font-size: 0.9em;
+        padding: 12px 14px;
+      }
+
+      .results h2 {
+        font-size: 1.5em;
+      }
+
+      .lightning {
+        font-size: 6em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="lightning" id="lightning">⚡</div>
+
+  <div class="container">
+    <div class="header">
+      <h1>💕 How Well Do You Know Me? 💕</h1>
+      <p>A quiz made specially for you babe ✨</p>
+    </div>
+
+    <div class="quiz-intro" id="quizIntro">
+      <h2>🎮 Ready to Test Your Knowledge? 🎮</h2>
+      <p>Think you know everything about me? Let's find out! 15 questions, 3 choices each. Some answers are ridiculously wrong to make it easy for you... or are they? 😏</p>
+      <button class="next-btn" onclick="startQuiz()">LET'S GO! 🚀</button>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="results" id="results">
+      <h2>✨ Quiz Complete! ✨</h2>
+      <div class="score-bar-container">
+        <div class="score-bar" id="scoreBar">
+          <span id="scoreBarText"></span>
+        </div>
+      </div>
+      <p class="score-text">You got <span id="finalScore" style="color: #ff006e; font-size: 1.3em;">0</span> out of 15 correct!</p>
+      <p class="message" id="resultMessage"></p>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What's my absolute favorite food?",
+        options: ["Lasagna", "Unicorn Tears Soup", "Deep-fried socks"],
+        correct: 0
+      },
+      {
+        question: "If I could have any superpower, what would it be?",
+        options: ["Ability to talk to furniture", "Be the smartest person in the world", "Turn into a potato at will"],
+        correct: 1
+      },
+      {
+        question: "What's my favorite movie of all time?",
+        options: ["Attack of the Killer Tomatoes", "Shrek", "My Cat's Home Videos Vol. 3"],
+        correct: 1
+      },
+      {
+        question: "What do I do when I'm bored?",
+        options: ["Count my eyelashes", "I think about you", "Practice yodeling"],
+        correct: 1
+      },
+      {
+        question: "Who's my favorite music artist?",
+        options: ["DJ Mosquito Buzz", "Van Zee", "The Screaming Vegetables"],
+        correct: 1
+      },
+      {
+        question: "Which animal represents me best?",
+        options: ["A confused penguin", "Kangaroo (because he punches)", "Sleepy sloth on vacation"],
+        correct: 1
+      },
+      {
+        question: "What's my secret hobby?",
+        options: ["Jiu Jitsu", "Collecting belly button lint", "Extreme ironing"],
+        correct: 0
+      },
+      {
+        question: "Where would I love to go on vacation?",
+        options: ["The moon (no WiFi though)", "Africaaaa (Hakuna Matata)", "My neighbor's backyard"],
+        correct: 1
+      },
+      {
+        question: "What's my stupidest fear?",
+        options: ["Escalators that go backwards", "Bed Bugs", "People who wear socks with sandals"],
+        correct: 1
+      },
+      {
+        question: "What always makes me laugh?",
+        options: ["When she cuts her eyebrows wrong", "Birds falling off branches", "Instructions manuals for spoons"],
+        correct: 0
+      },
+      {
+        question: "What's my favorite color?",
+        options: ["Rainbow vomit", "Black and grey", "Invisible"],
+        correct: 1
+      },
+      {
+        question: "What could I never eat?",
+        options: ["Clouds (too fluffy)", "Air-flavored chips", "Only 1 meal a day"],
+        correct: 2
+      },
+      {
+        question: "What's my hidden talent?",
+        options: ["Professional napper", "Be the best boyfriend", "Can speak to pigeons"],
+        correct: 1
+      },
+      {
+        question: "What's the first thing I do in the morning?",
+        options: ["Brush my teeth", "Scream into the void", "Check if I'm still alive"],
+        correct: 0
+      },
+      {
+        question: "What's my biggest dream?",
+        options: ["Own a petting zoo of rubber ducks", "Become a professional blanket tester", "Work for a cool brand"],
+        correct: 2
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    function startQuiz() {
+      document.getElementById('quizIntro').style.display = 'none';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentQuestion >= quizData.length) {
+        showResults();
+        return;
+      }
+
+      const container = document.getElementById('quizContainer');
+      const data = quizData[currentQuestion];
+      answered = false;
+
+      container.innerHTML = `
+        <div class="progress">Question ${currentQuestion + 1} of ${quizData.length}</div>
+        <div class="question-container">
+          <div class="question-number">Question ${currentQuestion + 1}</div>
+          <div class="question-text">${data.question}</div>
+          <div class="options">
+            ${data.options.map((option, index) => `
+              <button class="option-btn" onclick="selectAnswer(${index})">${option}</button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectAnswer(selected) {
+      if (answered) return;
+      answered = true;
+
+      const data = quizData[currentQuestion];
+      const buttons = document.querySelectorAll('.option-btn');
+      
+      buttons.forEach(btn => btn.disabled = true);
+
+      if (selected === data.correct) {
+        buttons[selected].classList.add('correct');
+        score++;
+        showLightning();
+      } else {
+        buttons[selected].classList.add('wrong');
+        buttons[data.correct].classList.add('correct');
+      }
+
+      setTimeout(() => {
+        currentQuestion++;
+        showQuestion();
+      }, 1500);
+    }
+
+    function showLightning() {
+      const lightning = document.getElementById('lightning');
+      lightning.classList.add('show');
+      setTimeout(() => {
+        lightning.classList.remove('show');
+      }, 600);
+    }
+
+    function showResults() {
+      document.getElementById('quizContainer').innerHTML = '';
+      const results = document.getElementById('results');
+      const scoreBar = document.getElementById('scoreBar');
+      const scoreBarText = document.getElementById('scoreBarText');
+      const finalScore = document.getElementById('finalScore');
+      const message = document.getElementById('resultMessage');
+
+      results.classList.add('show');
+
+      const percentage = (score / quizData.length) * 100;
+      
+      setTimeout(() => {
+        scoreBar.style.width = percentage + '%';
+        scoreBarText.textContent = Math.round(percentage) + '%';
+      }, 100);
+
+      finalScore.textContent = score;
+
+      if (score === 15) {
+        message.textContent = "🏆 PERFECT SCORE! You know me better than I know myself! You're officially the best girlfriend ever! 💕✨";
+      } else if (score >= 12) {
+        message.textContent = "🌟 WOW! Almost perfect! You know me so well babe! 💕";
+      } else if (score >= 9) {
+        message.textContent = "😊 Pretty good! You know me quite well! There's still some secrets left to discover though 😏💕";
+      } else if (score >= 6) {
+        message.textContent = "🤔 Not bad! But I think we need to spend more time together so you can learn more about me! 💕";
+      } else {
+        message.textContent = "😅 Looks like we have a lot to talk about! But that's okay, getting to know each other is the fun part! 💕";
+      }
+    }
+  </script>
+</body>
+</html>
