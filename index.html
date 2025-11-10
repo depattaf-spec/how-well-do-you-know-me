@@ -18,6 +18,9 @@
       color: #ffffff;
       padding: 20px;
       overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .container {
@@ -282,10 +285,14 @@
     @media (max-width: 640px) {
       body {
         padding: 10px;
+        padding-top: max(10px, env(safe-area-inset-top));
+        padding-bottom: max(10px, env(safe-area-inset-bottom));
+        min-height: 100svh;
       }
 
       .container {
         padding: 20px 15px;
+        width: 100%;
       }
 
       .header {
